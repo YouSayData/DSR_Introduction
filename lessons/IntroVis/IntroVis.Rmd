@@ -1,0 +1,308 @@
+---
+title: "Intro to Visualisations in R"
+tutorial:
+  id: "yousaydata.introvis"
+  version: 2.0.0
+output:
+  learnr::tutorial:
+    progressive: true
+    allow_skip: true
+    theme: simplex
+    includes:
+      before_body: "./www/branding.html"
+runtime: shiny_prerendered
+description: >
+  Learn some basic concepts of ggplot2.
+---
+
+```{r setup, include=FALSE}
+library(learnr)
+library(tidyverse)
+gradethis::gradethis_setup()
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+
+## 1.1 The library we use
+
+One of the most central libraries in modern R is `tidyverse`. We are going to use it throughout. `tidyverse` is essentially a collection of many different libraries for working with rectangular data.
+
+```{r echo=TRUE}
+library(tidyverse)
+```
+
+In what follows let's try to answer whether cars with big engines use more fuel than cars with small engines? 
+
+For this we are going to use the `mpg` data set that is included in `tidyverse`. We can just see what it is by calling it: 
+
+```{r lookup, exercise=TRUE}
+mpg
+```
+
+Since it is part of an official package it is also documented and we can use the `?` command to see the documentation (that is nicer in RStudio)":
+
+```{r lookup2, exercise=TRUE}
+?mpg
+```
+
+If we want to plot it, we can do it using `ggplot`:
+
+```{r firstplot, exercise=TRUE}
+ggplot(data = mpg) +
+  geom_point(mapping = aes(x = displ, y = hwy))
+```
+
+So we see that `ggplot` has the following simple structure:
+
+```{r echo=T}
+# ggplot(data = <DATA>) +
+# <GEOM_FUNCTION>(mapping = aes(<MAPPINGS>))
+```
+
+## 1.2 Exercises
+
+1. Run `ggplot(data = mpg)`. What do you see?
+
+```{r ex121, exercise=TRUE}
+
+```
+
+2. How many rows are in mpg? How many columns?
+
+```{r ex122, exercise=TRUE}
+
+```
+
+3. What does the drv variable describe? Read the help for ?mpg to find out.
+
+```{r ex123, exercise=TRUE}
+
+```
+
+4. Make a scatterplot of hwy vs cyl (replace the `<...>` in the code).
+
+```{r ex124, exercise=TRUE}
+ggplot(data = <DATA>) +
+<GEOM_FUNCTION>(mapping = aes(<MAPPINGS>))
+```
+
+5. What happens if you make a scatterplot of class vs drv? Why is the plot not useful?
+
+```{r ex125, exercise=TRUE}
+ggplot(data = <DATA>) +
+<GEOM_FUNCTION>(mapping = aes(<MAPPINGS>))
+```
+
+
+## 2.1 Aesthetics 
+
+Let's have a look a how we can visuallly mark some outliers:
+
+```{r}
+outliers <- (mpg$hwy > 20) & (mpg$displ > 5)
+ggplot(mpg, aes(x = displ, y = hwy, colour = outliers)) +
+  geom_point()
+```
+
+We can see that aside from x and y, there are other aesthetics of the visualisation that I can change. For instance the colour.
+
+```{r colmark, exercise=T}
+ggplot(data = mpg) + 
+  geom_point(mapping = aes(x = displ, y = hwy, color = class))
+```
+
+Of course there are more aesthetics and options.
+
+Like size:
+```{r sizemark, exercise=T}
+ggplot(data = mpg) + 
+  geom_point(mapping = aes(x = displ, y = hwy, size = class))
+```
+
+Like the alpha value of a colour:
+```{r alphamark, exercise=T}
+ggplot(data = mpg) + 
+  geom_point(mapping = aes(x = displ, y = hwy, alpha = class))
+```
+
+Or shape:
+```{r shapemark, exercise=T}
+ggplot(data = mpg) + 
+  geom_point(mapping = aes(x = displ, y = hwy, shape = class))
+```
+
+If I want to make a general change, I am doing this outside of the `aes` function:
+```{r allmark, exercise=T}
+ggplot(data = mpg) + 
+  geom_point(mapping = aes(x = displ, y = hwy), size = 5)
+```
+
+## 2.2. Exercises
+
+1. What’s gone wrong with this code? Why are the points not blue? Can you correct it?
+
+```{r ex221, exercise=T}
+ggplot(data = mpg) + 
+  geom_point(mapping = aes(x = displ, y = hwy, color = "blue"))
+```
+
+2. Which variables in mpg are categorical? Which variables are continuous? (Hint: type ?mpg to read the documentation for the dataset). How can you see this information when you run mpg?
+
+```{r ex222, exercise=T}
+
+```
+
+3. Map a continuous variable to color, size, and shape. How do these aesthetics behave differently for categorical vs. continuous variables?
+
+```{r ex223, exercise=T}
+
+```
+
+4. What happens if you map the same variable to multiple aesthetics?
+
+```{r ex224, exercise=T}
+
+```
+
+5. What does the stroke aesthetic do? What shapes does it work with? (Hint: use ?geom_point)
+
+```{r ex225, exercise=T}
+
+```
+
+6. What happens if you map an aesthetic to something other than a variable name, like aes(colour = displ < 5)? Note, you’ll also need to specify x and y.
+
+```{r ex226, exercise=T}
+
+```
+
+## 2.3. Facets
+
+We can also use facets for our visualisations. Either we wrap it by one variable with `facet_wrap`:
+
+```{r echo=T}
+ggplot(data = mpg) + 
+  geom_point(mapping = aes(x = displ, y = hwy)) + 
+  facet_wrap(~ class, nrow = 2)
+```
+
+Or produce a two-dimensional grid with `facet_grid`:
+
+```{r echo=T}
+ggplot(data = mpg) + 
+  geom_point(mapping = aes(x = displ, y = hwy)) + 
+  facet_grid(drv ~ cyl)
+```
+
+Feel free to try it yourself:
+
+```{r ptt23, exercise = T}
+
+```
+
+## 3.1 GEOMs
+
+I am sure you do not want to just produce scatter plots all the time. `ggplot` has you covered for all kinds of plots:
+
+What's the difference here?
+
+```{r echo=T}
+ggplot(data = mpg) + 
+  geom_point(mapping = aes(x = displ, y = hwy))
+
+ggplot(data = mpg) + 
+  geom_smooth(mapping = aes(x = displ, y = hwy))
+```
+
+With other types of plots, `ggplot` gives you access to another set of aesthetics. For instance, the `linetype` aesthetic:
+
+```{r echo=T}
+ggplot(data = mpg) + 
+  geom_smooth(mapping = aes(x = displ, y = hwy, linetype = drv))
+```
+
+In addition to switching `geom_`-functions you can also visually group the data or modify the legend. Try any of those:
+
+```{r ptt31, exercise = T}
+# ggplot(data = mpg) +
+#  geom_smooth(mapping = aes(x = displ, y = hwy))
+#
+# ggplot(data = mpg) +
+#  geom_smooth(mapping = aes(x = displ, y = hwy, group = drv))
+
+# ggplot(data = mpg) +
+#   geom_smooth(
+#     mapping = aes(x = displ, y = hwy, color = drv),
+#     show.legend = FALSE
+#  )
+```
+
+It is also possible to use multiple different `geom`-functions. You essentially stack the visualisations on top of each other. `ggplot` works in layers!
+
+```{r, echo=T}
+ggplot(data = mpg) + 
+  geom_point(mapping = aes(x = displ, y = hwy)) +
+  geom_smooth(mapping = aes(x = displ, y = hwy))
+```
+
+Try to avoid code duplication, though. The `geom`-functions can inhere from their parent `ggplot`-function. Checkt it out yourself: 
+
+```{r ptt31a, exercise=T}
+ggplot(data = mpg, mapping = aes(x = displ, y = hwy)) + 
+  geom_point() + 
+  geom_smooth()
+```
+
+If you do this, you can always overwrite inhereted settings for individual layers. What do you think this will produce? 
+
+```{r ptt31b, exercise=T}
+ggplot(mpg, aes(x = displ, y = hwy, col = drv)) + 
+  geom_point(aes(color = class), show.legend = F) +
+  geom_smooth()
+```
+
+(Needless to say, it is not a very useful plot)
+
+In any case, you can even switch the data you are using:
+
+```{r ptt31c, exercise=T}
+ggplot(data = mpg, mapping = aes(x = displ, y = hwy)) + 
+  geom_point(mapping = aes(color = class)) + 
+  geom_smooth(data = filter(mpg, class == "subcompact"), se = FALSE)
+```
+
+## 3.2. Exercises
+
+1. What geom would you use to draw a line chart? A boxplot? A histogram? An area chart?
+
+```{r ex321, exercise=T}
+
+```
+
+2. Run this code in your head and predict what the output will look like. Then, run the code in R and check your predictions.
+
+```
+ggplot(data = mpg, mapping = aes(x = displ, y = hwy, color = drv)) + 
+  geom_point() + 
+  geom_smooth(aes(linetype = drv), se = FALSE)
+``` 
+
+```{r ex322, exercise=T}
+
+```
+
+3. What does show.legend = FALSE mean? What happens if you remove it? 
+
+```{r ex323, exercise=T}
+ggplot(data = mpg) +
+  geom_smooth(
+    mapping = aes(x = displ, y = hwy, color = drv),
+    show.legend = FALSE
+  )
+```
+
+4. What does the se argument to geom_smooth() do?
+
+```{r ex324, exercise=T}
+
+```

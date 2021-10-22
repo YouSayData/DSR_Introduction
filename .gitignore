@@ -1,6 +1,11 @@
 # History files
 .Rhistory
 .Rapp.history
+.DS_Store
+
+# RStudio Connect Files
+rsconnect/
+*_files/
 
 # Session Data files
 .RData

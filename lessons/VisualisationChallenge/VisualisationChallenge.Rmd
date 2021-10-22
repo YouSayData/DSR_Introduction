@@ -1,0 +1,107 @@
+---
+title: "Visualisation Challenge"
+tutorial:
+  id: "yousaydata.vischallenge"
+  version: 2.0.0
+output:
+  learnr::tutorial:
+    progressive: true
+    allow_skip: true
+    theme: simplex
+    includes:
+      before_body: "./www/branding.html"
+runtime: shiny_prerendered
+description: >
+  Learn some basic concepts of ggplot2.
+---
+
+```{r setup, include=FALSE}
+library(learnr)
+library(tidyverse)
+gradethis::gradethis_setup()
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+## Challenge 1
+
+Reproduce the graph:
+
+```{r}
+ggplot(mpg, aes(displ,hwy)) +
+  geom_point() +
+  geom_smooth(se=F)
+```
+
+```{r challenge1, exercise=TRUE}
+
+```
+
+## Challenge 2
+
+Reproduce the graph:
+
+```{r}
+ggplot(mpg, aes(displ,hwy)) +
+  geom_smooth(aes(group=drv), se=F)+
+  geom_point()
+```
+
+```{r challenge2, exercise=TRUE}
+
+```
+
+## Challenge 3 
+
+Reproduce the graph:
+
+```{r}
+ggplot(mpg, aes(displ,hwy, col=drv)) +
+  geom_smooth(se=F)+
+  geom_point()
+```
+
+```{r challenge3, exercise=TRUE}
+
+```
+
+## Challenge 4
+
+Reproduce the graph:
+
+```{r}
+ggplot(mpg, aes(displ,hwy)) +
+  geom_point(aes(col=drv)) +
+  geom_smooth(se=F)
+```
+
+```{r challenge4, exercise=TRUE}
+
+```
+
+## Challenge 5
+
+Reproduce the graph:
+
+```{r}
+ggplot(mpg, aes(displ,hwy)) +
+  geom_point(aes(col=drv)) +
+  geom_smooth(aes(linetype=drv), se=F)
+```
+
+```{r challenge5, exercise=TRUE}
+
+```
+
+## Challenge 6
+
+Reproduce the graph:
+
+```{r}
+ggplot(mpg, aes(displ,hwy)) +
+  geom_point(size = 4, col = "white") +
+  geom_point(aes(col=drv))
+```
+
+```{r challenge6, exercise=TRUE}
+
+```
