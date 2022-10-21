@@ -15,3 +15,4 @@ tidyverse_update()
 
 library(esquisse)
 esquisse::esquisser()
+esquisse::esquisser(viewer = "browser")

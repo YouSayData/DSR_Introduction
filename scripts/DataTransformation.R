@@ -89,6 +89,7 @@ df <- tibble(x = c(1, NA, 3))
 filter(df, x > 1)
 filter(df, is.na(x) | x > 1)
 
+# Group 30min after break
 ## EXERCISES
 
 # 1. Find all flights that
@@ -111,6 +112,7 @@ df <- tibble(x = c(5, 2, NA))
 arrange(df, x)
 arrange(df, desc(x))
 
+# In class
 ## EXERCISES
 
 # 1. How could you use arrange() to sort all missing values to the start? (Hint: use is.na()).
@@ -137,7 +139,7 @@ rename(flights, tail_num = tailnum)
 # you can use select to move columns by using the helper function everything()
 select(flights, time_hour, air_time, everything())
 
-## EXERCISES
+## EXERCISES 30min
 # 1. Brainstorm as many ways as possible to select dep_time, dep_delay, arr_time, and arr_delay from flights.
 # 2. What happens if you include the name of a variable multiple times in a select() call?
 # 3. What does the one_of() function do? Why might it be helpful in conjunction with this vector?

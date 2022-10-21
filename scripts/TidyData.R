@@ -89,7 +89,7 @@ table2 %>%
 
 # 1.2. Exercise -----------------------------------------------------------
 
-Tidy the simple tibble below. Do you need to make it wider or longer? What are the variables?
+# Tidy the simple tibble below. Do you need to make it wider or longer? What are the variables?
   
   preg <- tribble(
     ~pregnant, ~male, ~female,
