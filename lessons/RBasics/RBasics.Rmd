@@ -2,7 +2,7 @@
 title: "R Basics"
 tutorial:
   id: "yousaydata.rbasics"
-  version: 2.0.0
+  version: 3.0.0
 output:
   learnr::tutorial:
     progressive: true
@@ -30,7 +30,6 @@ R is like a fast calculator
 
 ```{r echo=T}
 232047294879347 * 242424 / 12313 + 2
-
 ```
 
 Here R only does the calculation for you. It does not actually save anything to memory. In R `<-` is used to assign a value to a variable. You can also use `=`, but this is considered not good style. If you are concerned that you have to type an extra sign use the [keyboard shortcut](https://support.rstudio.com/hc/en-us/articles/200711853-Keyboard-Shortcuts) `option/alt + -`, which will produce `<-`. 
@@ -84,32 +83,34 @@ a == 8
 grade_code()
 ```
 
-Aside from Base R functions, you can include third party functions, objects, and data via libraries:
+Aside from Base R functions, you can include third party functions, objects, and data via libraries. `install.packages()` is used to download and install a package from CRAN, while `library()` is used to load a package into the current R session. Unless you use packages such as `renv` or `packrat` you will have to install the packages only once on each new system or after upgrading your R version. We will discuss this in more detail in a more advanced workshop.
 
 ```{r echo=T}
 # install.packages("tidyverse")
 # This without the leading # would be the way to install a library.
 # A line with a leading # is ignored by R.
-# I have done so, because I do not want to install a package, already installed on my computer.
-# You only have to use the install.packages() function once on each new system
-# or after upgrading your R version.
-
 # You can also use those #-lines to comment your code
+
 # if you are using RStudio have a look what happens when you
 # start a line with # and finish the line with ####
 # This feature of RStudio helps you to organise your code.
 library(tidyverse)
 ```
 
-Which gives you access to more functionality for your projects:
+The `tidyverse` package is a collection of packages that work well together. It is a modern take on the `base` R packages and I use it (or parts of it) in almost every R program. For example, you can use it to plot data:
 
 ```{r echo=T}
-mpg %>% ggplot(aes(displ,hwy)) + geom_point()
+mpg |>
+  ggplot(aes(displ,hwy)) + geom_point()
 ```
 
-You do not need to understand the above code yet, just understand that we are using an external library. The `tidyverse` package is a library that contains a lot of useful features and it is the package, I use in almost every R program.
+The above code is also using something that is called a pipe `|>`. A pipe is a way to write code in a more readable way. R has several pipes and I used the base R pipe symbold above. Originally pipes were implemented using the `magrittr` package, which is part of the `tidyverse`. The `tidyverse` pipe uses `%>%` instead of `|>`. The pipe takes the output of the code on the left and uses it as the first argument of the function on the right. This way of writing code increases its readability, because you can read the pipe from left to right instead of from inside to outside. Alternatively you could write the code above as follows:
 
-That being said, you can also generate your own functions:
+```{r echo=T}
+ggplot(mpg, aes(displ,hwy)) + geom_point()
+```
+
+Aside from using third party packages, you can also extend R with your own functions:
 
 ```{r echo=T}
 myFunction <- function(x) {
@@ -119,106 +120,32 @@ myFunction <- function(x) {
 myFunction(15)
 ```
 
-## 2. Data Types
-
-The datatype of each variable is inferred:  
-Logical is either `TRUE` or `FALSE`.
-```{r echo=T}
-variable <- FALSE 
-class(variable)
-```
-
-Numeric is a number that can include fractual parts, i.e. 2.34.
-
-```{r echo=T}
-variable <- 2.34 
-class(variable)
-```
-
-Integer is a whole number.
-
-```{r echo=T}
-variable <- 2L 
-variable
-class(variable)
-```
-
-### Sidetrack
-
-Integers are cheaper than Numerics:
-
-```{r echo=T}
-object.size(c(1L,2L,3L,4L,5L)) < object.size(c(1,2,3,4,5))
-```
-
-Unless they are empty:
-
-```{r echo=T}
-object.size(numeric()) == object.size(integer())
-```
-
-Then they are both 48bytes:
-
-```{r echo=T}
-object.size(numeric())
-```
-
-### Back on track
-
-You can also express complex numbers.
-
-```{r echo=T}
-variable <- 3 + 2i
-variable
-class(variable)
-```
-
-And plot them:
-
-```{r echo=T}
-plot(variable)
-```
-
-Strings are called characters in R.
-
-```{r echo=T}
-variable <- "hello world"
-variable
-class(variable)
-```
-
-The last data type is `raw`. This refers to a byte stream.
-
-```{r echo=T}
-variable <- charToRaw(variable)
-variable
-class(variable)
-```
-
-Raw objects are small. Empty raw objects are also 48bytes though:
-
-```{r echo=T}
-object.size(raw())
-```
-
-The types you will use most are characters, numeric, and logical.
-
-## 3. Data Structures
+## 2. Basic Data Structures
 
 ### Vectors
 
-Technically everything that you have produced so far are vectors. You build a vector using the `c` function:
+Technically every data object you work with in R is a vector. A vector is a sequence of data elements of the same basic type. You build the most basic form of a vector using the `vector` function:
 
 ```{r echo=T}
-(myVector <- c(1,2,4,5))
+(myVector <- vector(mode = "numeric", length = 5))
 ```
 
-And you can extract elements by index using `[]`:
+If you assign a single value to named variable in R, it will be a vector of length 1. You can then subset a vector using the `[]` operator:
+
 ```{r echo=T}
-myVector[3]
-myVector[2:3]
+myVector[1] <- 5
+myVector[3] <- 6
+myVector
+```
+
+You can use the brackets also to extract elements:
+
+```{r echo=T}
 myVector[1]
+myVector[1:3]
 ```
+
+Technically, with `1:3` you produce a vector of integers from 1 to 3. This is a special case of a vector, called a sequence. You can also use `[[]]` to extract elements, but this will not work for sequences.
 
 Vectors can be combined with other vectors using the `c()` function. Vectors can only contain *one type* of data. They will throw an error or normalise if you try to force two different types together.
 
@@ -231,13 +158,29 @@ c(VectorA,VectorB)
 class(c(VectorA,VectorB))
 ```
 
+In the above example VectorA is a numeric and VectorB is an integer. The combined vector is numeric.
+
+### Factors
+
+A factor in R is a vector that can contain only predefined values, and is used to store categorical data. For instance, if you have a variable with four levels, you can define the order of the levels. This is useful for statistical analysis and data visualisation, because you can define the order of the levels in a way that makes sense for your analysis or visualisation.
+
+```{r echo=T}
+# Create a vector.
+apples <- c('iOS','iPhone','MBP','iPhone','MBP')
+# Create a factor object.
+factor_apples <- factor(apples, levels = c("iOS", "iPhone", "MBP", "Mac"), ordered = T)
+factor_apples
+```
+
 ### Lists
 
-A list is an R-object which can contain many different types, such as vectors, functions and even another list inside it.
+A list is an R-object which can contain many different types, such as vectors of basic types, functions and even other lists.
 
 ```{r echo=T}
 list(VectorA, VectorB, list(VectorA, VectorB), mean)
 ```
+
+Technically a list is a vector, but it is a vector of a special type.
 
 Lists can be named:
 
@@ -252,212 +195,14 @@ mylist$b
 mylist[[1]]
 ```
 
-N.B. `[[]]` also work for vectors if you do not want to remember the difference.
-
-### Matrices
-
-A matrix is a two-dimensional rectangular data set of ONE data type. It can be created using a vector input to the matrix function. This is how you create a matrix:
+You can also extract elements using the `[]` operator, but this will return a list:
 
 ```{r echo=T}
-M <- matrix( c('a','a','b','c','b','a'), nrow = 2, ncol = 3, byrow = TRUE)
-M
+mylist[c("a","b")]
+mylist[1:2]
 ```
 
-If you want to know who the `matrix()` function works, you can ask R:
-
-```{r echo=T, eval=F}
-?matrix
-```
-
-Let's have a look at the result, if we use the same input vector, but a different method of filling the matrix:
-
-```{r echo=T}
-M <- matrix(c('a','a','b','c','b','a'), nrow = 2, ncol = 3, byrow = FALSE)
-M
-```
-
-Do you see how it has changed? 
-
-You can extract rows from a matrix:
-
-```{r echo=T}
-M[1,]
-```
-
-You can extract columns from a matrix:
-
-```{r echo=T}
-M[,1]
-```
-
-Or individual cells
-
-You can extract rows from a matrix:
-
-```{r echo=T}
-M[1,2]
-```
-
-### Factors
-
-A factor stores the vector and all its unique values. Let's start with creating a vector.
-
-```{r echo=T}
-# Create a vector.
-apples <- c('iOS','iPhone','MBP','iPhone','MBP')
-```
-
-The vector above has 5 elements total, but only 3 unique elements. If nothing is specified a factor will display all the options a value could have in the vector.
-
-```{r echo=T}
-# Create a vector.
-factor(apples)
-```
-
-Instead of infering it from a given vector, we could also supply a vector with all potential values and even supply an order:
-
-```{r echo=T}
-# Create a factor object.
-factor_apples <- factor(apples, levels = c("iOS", "iPhone", "MBP", "Mac"), ordered = T)
-```
-
-Compare the outputs:
-
-```{r echo=T}
-factor(apples)
-factor_apples
-nlevels(factor_apples)
-```
-
-We can extract individual elements using `[]`. Note that R will tell us all the levels as well. If we want to only extract the value we have to turn it into a string:
-
-```{r echo=T}
-factor_apples[4]
-as.character(factor_apples[4])
-```
-
-### Data Frames
-
-And finally, Data Frames are mixed data presented in tabular form. 
-
-```{r echo=T}
-# Create the data frame.
-data_types <- data.frame(
-  types = c("logical", "numerical","integer", "complex", "character", "raw"), 
-  usage_probability = c(1, 1, 1, 0.1, 1, 0.5), 
-  got_it = c(rep("yes", 5), "no"),
-  answer = rep(42L, 6)
-)
-```
-
-While we can print it in a pretty way (which this renderer does by default):
-
-```{r echo=T}
-data_types
-```
-
-The `normal` print in the console is less useful:
-```{r echo=T}
-knitr::normal_print(data_types)
-```
-
-
-The `tidyverse` has also a modernised version of the dataframe called tibble, which behaves nicer:
-
-```{r echo=T}
-library(tidyverse)
-data_types_tibble <- as_tibble(data_types)
-
-data_types_tibble
-```
-
-and in the console:
-
-```{r echo=T}
-knitr::normal_print(data_types_tibble)
-```
-
-You might already see the advantages of the tibble.
-
-From a computer science perspective dataframes are a special type of list. They are a list where each element has exactly the same length as all other elements (that is what makes them rectangular). Because of this, the `$` operator that we know from named lists works for them too and because they are rectangular we can also use indices like with matrices:
-
-```{r echo=T}
-data_types$usage_probability
-
-data_types[,1:2]
-```
-
-
-## 4. Other Data Structures
-
-### Strings and Arrays
-
-Strings in R are called characters and they behave differently than in other programming languages:
-
-```{r echo=T}
-newString <- "test"
-length(newString)
-nchar(newString)
-```
-
-One dimensional arrays of simple types in R are best expressed as vectors. And so, if another developer talks about "arrays", the R programmer should translate that to "vectors". There is actually a data structure called "array" in R, but this is mainly reserved for multi-dimensionional arrays:
-
-```{r echo=T}
-intArray <- c(7L,8L,9L,10L)
-length(intArray)
-intArray 
-
-## sidetrack, you do not need to remember this
-intRealArray <- array(c(7L,8L,9L,10L),dim = c(2,2))
-intRealArray
-```
-
-### Hash table
-
-R does not have hash tables. Instead, R uses something like it that is called environment or it uses lists. That said ther is a `hashmap` library.
-
-### Linked Lists
-
-Linked list are directly implemented in R using list:
-
-```{r echo=T}
-lst <- list() # creates an empty (length zero) list
-lst
-```
-
-```{r echo=T}
-lst[[1]] <- 1 # automagically extends the lst
-lst[[2]] <- 2 # ditto
-lst
-```
-
-You can also create an empty list of  a set length:
-
-```{r echo=T}
-lst <- vector("list", 5)
-lst
-```
-
-Then populate it:
-
-```{r echo=T}
-lst <- list(1, 2, 3, 4, 5)
-lst
-```
-
-
-Or delete individual elements:
-
-```{r echo=T}
-lst <- lst[-2]
-lst
-```
-
-### Trees
-
-In R trees are just a list of lists. As an aside, R sometimes is not very memory efficient (if you do not watch out) and it likes copying (a lot). And so, if you want to store the data as a more complex graph, you need to use a graph db.
-
-Here is an example of a simple tree:
+Lists in R are super flexible and can be used to mimic tree like structures such as HTML, XML, or JSON. In R trees are just a list of lists. Here is an example of a simple tree:
 
 ```{r echo=T}
 tree <- list(
@@ -481,6 +226,209 @@ Or maybe more convenient the names:
 
 ```{r echo=T}
 tree$node2$node2$node1
+```
+
+## 3. Rectangular Data Structures
+
+Rectangular data structures are data structures that are rectangular, i.e. they have rows and columns. The most common rectangular data structures in R are matrices and data frames.
+
+### Matrices
+
+A matrix is a two-dimensional rectangular data set of ONE data type. It can be created using an input vector, the dimensions of the matrix, and a filling direction to the matrix function. This is how you create a matrix:
+
+```{r echo=T}
+M <- matrix( c('a','a','b','c','b','a'), nrow = 2, ncol = 3, byrow = TRUE)
+M
+```
+
+A matrix is always 2-dimensional. If you advance in R enough to use multidimensional matrices (e.g. for neural networks), you will have to use the `array` function or use tensors from the `keras` package. 
+
+Let's have a look at the result, if we use the same input vector, but a different method of filling the matrix:
+
+```{r echo=T}
+M <- matrix(c('a','a','b','c','b','a'), nrow = 2, ncol = 3, byrow = FALSE)
+M
+```
+
+Do you see how it has changed? 
+
+You can extract rows from a matrix:
+
+```{r echo=T}
+M[1,]
+```
+
+You can extract columns from a matrix:
+
+```{r echo=T}
+M[,1]
+```
+
+Or individual cells:
+
+```{r echo=T}
+M[1,2]
+```
+
+A matrix can have names rows and columns and you can use its names to extract elements:
+
+```{r echo=T}
+rownames(M) <- c("row1","row2")
+colnames(M) <- c("col1","col2","col3")
+M["row1","col2"]
+```
+
+### Data Frames
+
+Since matrices can only contain values of ONE type and data in the real world is often mixed, the data frame was introduced. A data frame is a named list of vectors of equal length. Each vector is a column and each column can have a different type. This is how you create a data frame:
+
+```{r echo=T}
+# Create the data frame.
+data_types <- data.frame(
+  types = c("logical", "numerical","integer", "complex", "character", "raw"), 
+  usage_probability = c(1, 1, 1, 0.1, 1, 0.5), 
+  got_it = c(rep("yes", 5), "no"),
+  answer = rep(42L, 6)
+)
+```
+
+While we can print it in a pretty way (which this renderer does by default):
+
+```{r echo=T}
+data_types
+```
+
+The `normal` print in the console is less useful:
+```{r echo=T}
+knitr::normal_print(data_types)
+```
+
+Data frames are relatively old by now. R was first released in 1995 and the data frame was introduced in 1997. They were not made for big data and are not as efficient as modern data structures. Because of this, the `data.table` package was introduced in 2006 and the `dplyr` package in 2014. `dplyr` is part of the `tidyverse` and contains a structure called tibble, which is a modernised version of the data frame and behaves nicer:
+
+```{r echo=T}
+library(tidyverse)
+data_types_tibble <- as_tibble(data_types)
+
+data_types_tibble
+```
+
+and in the console:
+
+```{r echo=T}
+knitr::normal_print(data_types_tibble)
+```
+
+Because dataframes are named list, the `$` operator that have encountered earlier works for them too and because they are rectangular we can also use indices like with matrices:
+
+```{r echo=T}
+data_types$usage_probability
+
+data_types[,1:2]
+```
+
+Try it for yourself. What would be the result of the following code (replace the `_` with the solution)?
+
+```{r ex3_1, exercise = TRUE}
+data_types[1,2] == _
+```
+
+```{r ex3_1-solution}
+data_types[1,2] == 1
+```
+ 
+```{r ex3_1-code-check}
+grade_code()
+```
+
+## 4. Data Types
+
+R is a typed language. This means that every object in R has a type. There are five basic data types in R: logical, numeric, integer, complex, and character. There is also a special type called raw, which is used to store raw bytes. Of those types, you will most likely only work with four: logical, numeric, integer, and character.
+
+R is a dynamically typed language. This means that you do not have to declare the type of a variable when you create one, instead the type of a variable is determined by the value that is assigned to it. You can check the type of a variable using the `class` or `typeof` function. Technically `class` is a function that returns the class of an object and `typeof` is a function that returns the type of an object, but for the basic types they return almost the same result from a human point of view.
+
+Logical is either `TRUE` or `FALSE`.
+```{r echo=T}
+variable <- FALSE 
+class(variable)
+```
+
+Numeric / double is a number that can include fractual parts, i.e. 2.34. 
+
+```{r echo=T}
+variable <- 2.34 
+class(variable)
+```
+
+``` {r echo=T}
+typeof(variable)
+```
+
+"Double" stands for "double precision floating point number". This is a technical term that refers to the way the number is stored in memory. If you are not interested in the technical details, you can think of "double" as a synonym for "numeric".
+
+Integer is a whole number.
+
+```{r echo=T}
+variable <- 2L 
+variable
+class(variable)
+```
+
+### Why do we have multiple data types for numbers?
+
+Integers are cheaper than doubles:
+
+```{r echo=T}
+object.size(c(1L,2L,3L,4L,5L)) < object.size(c(1,2,3,4,5))
+```
+
+Unless they are empty:
+
+```{r echo=T}
+object.size(numeric()) == object.size(integer())
+```
+
+Then they are both 48bytes:
+
+```{r echo=T}
+object.size(numeric())
+```
+
+There is also another numeric type called complex. Complex numbers are numbers that have a real part and an imaginary part. They are not used very often in data science, but they are used in some statistical and mathematical functions. You can create them like this:
+
+```{r echo=T}
+variable <- 2 + 3i
+```
+
+But we can also live happily ever after without knowing about them.
+
+### Characters
+
+The data type that stores textual data in R is called character. They are often called strings in other programming languages and I may refer to them by both names, since R has two libraries that are called `stringr` and `stringi` that are frequently used to work with characters.
+
+```{r echo=T}
+variable <- "hello world"
+variable
+class(variable)
+```
+
+Again everything in R is a vector and if you were to ask for the `length` of the variable, you would get the number of elements in the vector (not the number of characters in the string):
+
+```{r echo=T}
+length(variable)
+```
+
+If you were interested in the number of characters in the string, you would use the `nchar` function:
+
+```{r echo=T}
+nchar(variable)
+```
+
+The last data type is `raw`, but we can ignore it for now. It is used to store raw bytes and is not used very often in data science.
+
+```{r echo=T}
+variable <- charToRaw(variable)
+variable
+class(variable)
 ```
 
 That's all. Feel free to go over this page again at a later stage. Those are some solid mechanics for more complex problems.
