@@ -26,7 +26,7 @@ penguins |> ggplot(aes(flipper_length_mm)) +
     args = list(
       mean = mean(penguins$flipper_length_mm, na.rm = T), 
       sd = sd(penguins$flipper_length_mm, na.rm = T),
-      scale = 1000
+      scale = 700
       )
   ) + 
   ylab("count")
