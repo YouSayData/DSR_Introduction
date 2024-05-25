@@ -32,6 +32,10 @@ read_csv(readr_example("mtcars.csv"), col_types =
            )
 )
 
+path <- system.file("examples", "iris.sav", package = "haven")
+read_sav(path) |> 
+  mutate(species = as_factor(Species))
+
 # export
 ?write_csv
 ?write_excel_csv
